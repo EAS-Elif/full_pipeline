@@ -1,14 +1,14 @@
 ---
-# tasks file for ansible
-# - hosts: jenkins
-#   become_user: root
-#   become: true
-#   tasks:
+tasks file for ansible
+- hosts: jenkins
+  become_user: root
+  become: true
+  tasks:
   
-#     - name: Download Repo file
-#       ansible.builtin.get_url: 
-#         url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
-#         dest: /etc/yum.repos.d/jenkins.repo
+     - name: Download Repo file
+       ansible.builtin.get_url: 
+         url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+         dest: /etc/yum.repos.d/jenkins.repo
 
 #     - name: Download key
 #       ansible.builtin.rpm_key: 
