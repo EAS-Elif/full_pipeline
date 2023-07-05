@@ -45,14 +45,25 @@ ${vsphere_virtual_machine.vm[3].name} ansible_host=${vsphere_virtual_machine.vm[
 [all:vars]
 ansible_ssh_password=${var.ansible_ssh_password}
 ansible_ssh_user=${var.ansible_ssh_user}
+nexus_api_url=http://${vsphere_virtual_machine.vm[3].guest_ip_addresses[0]}:8081
+nexus_username=${var.nexus_username} 
+nexus_password=${var.nexus_password}
+user_id=${var.user_id}
+user_password=${var.user_password}
+role_id=${var.role_id} 
+role_name=${var.role_name}
+role_privileges=${var.role_privileges}
+first_name=${var.first_name}
+last_name=${var.last_name}
+emailAddress=${var.emailAddress}
 EOF
 }
 
-
 resource "local_file" "ansible_cfg" {
-  filename = "./ansible/tasks/ansible.cfg"
+  filename = "../ansible/tasks/ansible.cfg"
   content  = <<EOF
 [defaults]
 host_key_checking = false
 EOF
 }
+

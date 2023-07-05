@@ -81,3 +81,44 @@ variable "disk_label" {
   description = "disk label"
   default     = "disk0"
 }
+
+variable "nexus_username" {
+  description = "nexus_username"
+  default     = "admin"
+}
+variable "nexus_password" {
+  description = "nexus_password"
+  default     = "120b0001-ac2b-4201-936f-da33810fbc71"
+}
+variable "user_id" {
+  description = "nexus userId"
+  default     = "myuser"
+}
+variable "user_password" {
+  description = "nexus user_password"
+  default     = "password"
+}
+variable "role_id" {
+  description = "nexus role_id"
+  default     = "myrole"
+}
+variable "role_name" {
+  description = "nexus role_name"
+  default     = "MyRole"
+}
+variable "role_privileges" {
+  description = "nexus role_privileges"
+  default     = "nx-repository-view-*"
+}
+variable "first_name" {
+  description = "nexus first_name"
+  default     = "test_first"
+}
+variable "last_name" {
+  description = "nexus last_name"
+  default     = "test_last"
+}
+variable "emailAddress" {
+  description = "nexus emailAddress"
+  default     = "test@test.com"
+}
