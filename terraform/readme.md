@@ -67,3 +67,43 @@ roles=role
 role_id=myrole 
 role_name=MyRole
 role_privileges=nx-repository-view-*
+
+sonarqube_api_url=http://172.16.1.89:9000
+sonarqube_username=admin
+sonarqube_password=admin
+user_login=admin
+New_password=Renegade187!
+previous_Password=admin
+status=active
+
+
+---
+- name: Modify SonarQube admin password
+  hosts: sonarqube_server
+  gather_facts: no
+
+  tasks:
+    - name: Set SonarQube admin password
+      uri:
+        url: "http://localhost:9000/api/users/change_password"
+        method: POST
+        body_format: json
+        body:
+          login: "admin"
+          password: "new_password"
+        headers:
+          Content-Type: "application/json"
+      register: response
+
+    - name: Check response status
+      debug:
+        var: response.status_code
+
+
+
+sonarqube_api_url=http://172.16.1.98:9000
+sonarqube_username=admin
+sonarqube_password=admin
+status=active
+sonarqube_admin_newpassword=Renegade187!
+token_name=new

@@ -1,5 +1,4 @@
 ---
-# tasks file for ansible
 - hosts: jenkins
   become_user: root
   become: true
@@ -162,6 +161,48 @@
         enabled: true
         name: sonar
         masked: no
+
+    - name: Health check
+      uri: 
+          url: "{{ sonarqube_api_url }}/service/rest/v1/status" 
+          user: "{{ sonarqube_username }}"
+          password: "{{ sonarqube_password }}"
+          validate_certs: false
+          force_basic_auth: true
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 20
+          
+
+    - name: Change password
+      uri:
+        url: " {{ sonarqube_api_url }}/api/users/change_password?login={{ sonarqube_username }}&password={{ sonarqube_admin_newpassword }}&previousPassword={{ sonarqube_password }} " 
+        method: POST
+        user: "{{ sonarqube_username }}"
+        password: "{{ sonarqube_password }}"
+        validate_certs: false
+        force_basic_auth: true
+        return_content: yes
+        status_code: 204 
+       
+      register: response
+   
+
+    - name: Generate access token 
+      uri:
+          url: "{{ sonarqube_api_url }}/api/user_tokens/generate?name={{token_name}}"
+          method: POST
+          user: "{{ sonarqube_username }}"
+          password: "{{ sonarqube_admin_newpassword }}"
+          validate_certs: false
+          force_basic_auth: true
+          headers:
+             Authorization: "Bearer MY_TOKEN"
+      register: get_sonar_output
+
+   
+          
 
 - hosts: nexus
   tasks:
@@ -375,7 +416,7 @@
         headers:
              Content-Type: "application/json"
         return_content: yes
-        status_code: 200
+        status_code: 201
        
          
       register: login
