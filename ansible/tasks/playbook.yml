@@ -309,23 +309,7 @@ tasks file for ansible
       register: role_creation_result
 
 
-    - name: Assign Role to User
-      uri:
-        url: "{{ nexus_url }}/service/rest/v1/security/users/{{ user_id }}/roles"
-        method: PUT
-        user: "{{ nexus_username }}"
-        password: "{{ nexus_password }}"
-        body_format: json
-        body: |
-          {
-            "source": "default",
-            "roles": [
-              {
-                "id": "{{ role_id }}"
-              }
-            ]
-          }
-      when: user_creation_result.status == 201 or user_check_result.status == 200
+
 
 
 
