@@ -28,3 +28,5 @@ https://medium.com/globant/jenkins-jcasc-for-beginners-819dff6f8bc including JCA
 https://plugins.jenkins.io/github/ GitHub plugin
 https://www.cloudbees.com/blog/using-git-jenkins Git install
 https://ostechnix.com/ansible-register/ ansible register variable
+https://dev.to/mesadhan/install-nexus-repository-manager-linux-in-centos7-deploy-and-use-jar-4bge   install nexus
+https://infohub.delltechnologies.com/l/dell-powermax-ansible-modules-best-practices-1/making-rest-api-calls-with-the-ansible-uri-module-1      user/role

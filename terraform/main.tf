@@ -28,7 +28,7 @@ resource "vsphere_virtual_machine" "vm" {
 
 # Generate inventory file for Ansible
 resource "local_file" "inventory" {
-  filename = "./ansible/tasks/inventory.ini"
+  filename = "../ansible/tasks/inventory.ini"
   content  = <<EOF
 [${vsphere_virtual_machine.vm[0].name}]
 ${vsphere_virtual_machine.vm[0].name} ansible_host=${vsphere_virtual_machine.vm[0].guest_ip_addresses[0]}
