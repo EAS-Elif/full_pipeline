@@ -36,9 +36,8 @@ jenkins:
             providerId: "default"
         - "timezone"
         - "experimentalFlags"
-        - mailer:
-            emailAddress: "elif@enterpriseautomation.co.uk"
         - "apiToken"
+        - "mailer"
   slaveAgentPort: -1
   updateCenter:
     sites:
@@ -97,7 +96,7 @@ unclassified:
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
-    hookUrl: "http://172.16.1.85:8080/github-webhook/"
+    hookUrl: "http://172.16.1.104:8080/github-webhook/"
   globalTimeOutConfiguration:
     operations:
     - "abortOperation"
@@ -113,7 +112,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
-    url: "http://172.16.1.85:8080/"
+    url: "http://172.16.1.104:8080/"
   mailer:
     charset: "UTF-8"
     useSsl: false

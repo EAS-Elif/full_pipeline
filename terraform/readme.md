@@ -107,3 +107,41 @@ sonarqube_password=admin
 status=active
 sonarqube_admin_newpassword=Renegade187!
 token_name=new
+
+https://blogs.perficient.com/2022/05/31/using-ansible-uri-module-with-sonarqube-tokens/
+https://blog.soebes.io/posts/2023/01/2023-01-21-ansible-sonarqube-setup/
+rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm
+https://serverfault.com/questions/736538/install-rpm-package-using-ansible
+https://aquasecurity.github.io/trivy/v0.18.3/installation/ 
+https://github.com/aquasecurity/trivy-repo
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/yum_repository_module.html
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+
+
+    # - name: Import RPM GPG key
+    #   ansible.builtin.rpm_key:
+    #     key: https://aquasecurity.github.io/trivy-repo/deb/public.key
+    #     state: present 
+
+    # - name: Download repo file to dest
+    #   ansible.builtin.get_url:
+    #     url: https://aquasecurity.github.io/trivy-repo
+    #     dest: /etc/yum.repos.d/trivy.repo
+
+    # - name: Edit the repository file
+    #   lineinfile: 
+    #      path: /etc/yum.repos.d/trivy.repo
+    #      regexp: '^baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$basearch/'
+    #      line: 'baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/'
+
+    # - name: Edit the repository file
+    #   lineinfile: 
+    #      path: /etc/yum.repos.d/trivy.repo
+    #      regexp: '^gpgcheck=1'
+    #      line: 'gpgcheck=0'
+
+
+    # - name: Install Trivy RPM package
+    #   yum:
+    #     state: present
+    #     name: /tmp/trivy.rpm -->

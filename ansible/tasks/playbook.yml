@@ -55,371 +55,404 @@
       - github-plugin
       - sonar
 
-- hosts: sonarqube
-  tasks:
-    - name: Install tools
-      yum: 
-       name:
-       - vim
-       - wget
-       - curl
-       - unzip
-       - java-11-openjdk
-       state: present
+    -  name: Add Trivy repository
+       ansible.builtin.yum_repository:
+         name: trivy
+         description: Trivy YUM repo
+         baseurl: https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+         gpgcheck: no
+         enabled: 1
 
-    - name: Create a group as sonar
-      ansible.builtin.group:
-        name: sonar
+    -  name: Install trivy
+       yum:
+        name:
+        - trivy
+        state: present
 
-    - name: Add the sonar user with directory access
-      ansible.builtin.user:
-        group: sonar
-        name: sonar
-        home: /opt/sonarqube
+# - hosts: sonarqube
+#   tasks:
+#     - name: Install tools
+#       yum: 
+#        name:
+#        - vim
+#        - wget
+#        - curl
+#        - unzip
+#        - java-11-openjdk
+#        state: present
+
+#     - name: Create a group as sonar
+#       ansible.builtin.group:
+#         name: sonar
+
+#     - name: Add the sonar user with directory access
+#       ansible.builtin.user:
+#         group: sonar
+#         name: sonar
+#         home: /opt/sonarqube
         
       
-    - name: Download sonarqube
-      ansible.builtin.get_url:
-        url: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.1.0.47736.zip
-        dest: /tmp/
+#     - name: Download sonarqube
+#       ansible.builtin.get_url:
+#         url: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.1.0.47736.zip
+#         dest: /tmp/
 
-    - name: Unzip sonarqube
-      ansible.builtin.unarchive:
-        src: /tmp/sonarqube-9.1.0.47736.zip
-        dest: /opt/
-        remote_src: yes
+#     - name: Unzip sonarqube
+#       ansible.builtin.unarchive:
+#         src: /tmp/sonarqube-9.1.0.47736.zip
+#         dest: /opt/
+#         remote_src: yes
 
-    - name: Create a directory 
-      ansible.builtin.file: 
-        path: /opt/sonarqube/
-        state: directory
-        mode: '0755'
+#     - name: Create a directory 
+#       ansible.builtin.file: 
+#         path: /opt/sonarqube/
+#         state: directory
+#         mode: '0755'
 
-    - name: Copy extracted set up
-      ansible.builtin.copy:
-        src: /opt/sonarqube-9.1.0.47736/
-        dest: /opt/sonarqube/
-        owner: sonar
-        group: sonar
-        mode: '0644'
-        remote_src: yes
+#     - name: Copy extracted set up
+#       ansible.builtin.copy:
+#         src: /opt/sonarqube-9.1.0.47736/
+#         dest: /opt/sonarqube/
+#         owner: sonar
+#         group: sonar
+#         mode: '0644'
+#         remote_src: yes
 
-    - name: Edit the sonar.properties file
-      ansible.builtin.lineinfile:
-        path: /opt/sonarqube/conf/sonar.properties
-        regexp: '^#sonar.web.host='
-        line: 'sonar.web.host={{ ansible_host }}'
+#     - name: Edit the sonar.properties file
+#       ansible.builtin.lineinfile:
+#         path: /opt/sonarqube/conf/sonar.properties
+#         regexp: '^#sonar.web.host='
+#         line: 'sonar.web.host={{ ansible_host }}'
         
-    - name: Edit the sonar.properties file
-      ansible.builtin.lineinfile:
-        path: /opt/sonarqube/conf/sonar.properties
-        regexp: '^#sonar.web.port=9000'
-        line: 'sonar.web.port=9000'
+#     - name: Edit the sonar.properties file
+#       ansible.builtin.lineinfile:
+#         path: /opt/sonarqube/conf/sonar.properties
+#         regexp: '^#sonar.web.port=9000'
+#         line: 'sonar.web.port=9000'
         
-    - name: Edit the sonar script
-      ansible.builtin.lineinfile: 
-        path: /opt/sonarqube/bin/linux-x86-64/sonar.sh
-        regexp: '^#RUN_AS_USER='
-        line: 'RUN_AS_USER=sonar'
+#     - name: Edit the sonar script
+#       ansible.builtin.lineinfile: 
+#         path: /opt/sonarqube/bin/linux-x86-64/sonar.sh
+#         regexp: '^#RUN_AS_USER='
+#         line: 'RUN_AS_USER=sonar'
 
-    - name: Give permission
-      ansible.builtin.shell:
-        chdir: /opt/sonarqube
-        cmd: chown -R sonar:sonar /opt/sonarqube
+#     - name: Give permission
+#       ansible.builtin.shell:
+#         chdir: /opt/sonarqube
+#         cmd: chown -R sonar:sonar /opt/sonarqube
 
-    - name: Give permission
-      ansible.builtin.shell:
-        chdir: /opt/sonarqube
-        cmd: chmod -R 0777 /opt/sonarqube
+#     - name: Give permission
+#       ansible.builtin.shell:
+#         chdir: /opt/sonarqube
+#         cmd: chmod -R 0777 /opt/sonarqube
     
-    - name: Copy file
-      ansible.builtin.copy: 
-        src: ./sonar.service
-        dest: /etc/systemd/system/sonar.service
-        owner: sonar
-        group: sonar
-        mode: '0644'
+#     - name: Copy file
+#       ansible.builtin.copy: 
+#         src: ./sonar.service
+#         dest: /etc/systemd/system/sonar.service
+#         owner: sonar
+#         group: sonar
+#         mode: '0644'
 
-    - name: Disable firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: stopped
-        enabled: False
+#     - name: Disable firewalld
+#       ansible.builtin.service:
+#         name: firewalld
+#         state: stopped
+#         enabled: False
 
-    - name: Start service
-      ansible.builtin.service:
-        name: sonar.service
-        state: started
+#     - name: Start service
+#       ansible.builtin.service:
+#         name: sonar.service
+#         state: started
     
-    - name: Enable service
-      ansible.builtin.service:
-        name: sonar.service
-        enabled: yes
+#     - name: Enable service
+#       ansible.builtin.service:
+#         name: sonar.service
+#         enabled: yes
       
-    - name: Make sure a service unit is running
-      ansible.builtin.systemd:
-        enabled: true
-        name: sonar
-        masked: no
+#     - name: Make sure a service unit is running
+#       ansible.builtin.systemd:
+#         enabled: true
+#         name: sonar
+#         masked: no
 
-    - name: Health check
-      uri: 
-          url: "{{ sonarqube_api_url }}/service/rest/v1/status" 
-          user: "{{ sonarqube_username }}"
-          password: "{{ sonarqube_password }}"
-          validate_certs: false
-          force_basic_auth: true
-      register: result
-      until: result.status == 200
-      retries: 10
-      delay: 20
+#     - name: Health check
+#       uri: 
+#           url: "{{ sonarqube_api_url }}/service/rest/v1/status" 
+#           user: "{{ sonarqube_username }}"
+#           password: "{{ sonarqube_password }}"
+#           validate_certs: false
+#           force_basic_auth: true
+#       register: result
+#       until: result.status == 200
+#       retries: 10
+#       delay: 20
           
 
-    - name: Change password
-      uri:
-        url: " {{ sonarqube_api_url }}/api/users/change_password?login={{ sonarqube_username }}&password={{ sonarqube_admin_newpassword }}&previousPassword={{ sonarqube_password }} " 
-        method: POST
-        user: "{{ sonarqube_username }}"
-        password: "{{ sonarqube_password }}"
-        validate_certs: false
-        force_basic_auth: true
-        return_content: yes
-        status_code: 204 
+#     - name: Change password
+#       uri:
+#         url: " {{ sonarqube_api_url }}/api/users/change_password?login={{ sonarqube_username }}&password={{ sonarqube_admin_newpassword }}&previousPassword={{ sonarqube_password }} " 
+#         method: POST
+#         user: "{{ sonarqube_username }}"
+#         password: "{{ sonarqube_password }}"
+#         validate_certs: false
+#         force_basic_auth: true
+#         return_content: yes
+#         status_code: 204 
        
-      register: response
+#       register: response
    
 
-    - name: Generate access token 
-      uri:
-          url: "{{ sonarqube_api_url }}/api/user_tokens/generate?name={{token_name}}"
-          method: POST
-          user: "{{ sonarqube_username }}"
-          password: "{{ sonarqube_admin_newpassword }}"
-          validate_certs: false
-          force_basic_auth: true
-          headers:
-             Authorization: "Bearer MY_TOKEN"
-      register: get_sonar_output
+#     - name: Generate access token 
+#       uri:
+#           url: "{{ sonarqube_api_url }}/api/user_tokens/generate?name={{token_name}}"
+#           method: POST
+#           user: "{{ sonarqube_username }}"
+#           password: "{{ sonarqube_admin_newpassword }}"
+#           validate_certs: false
+#           force_basic_auth: true
+#           headers:
+#              Authorization: "Bearer MY_TOKEN"
+#       register: get_sonar_output
 
    
           
 
-- hosts: nexus
-  tasks:
-    - name: Install tools
-      yum: 
-       name:
-       - vim
-       - wget
-       - unzip
-       - java-1.8.0-openjdk
-       - java-1.8.0-openjdk-devel
-       state: present
+# - hosts: nexus
+#   tasks:
+#     - name: Install tools
+#       yum: 
+#        name:
+#        - vim
+#        - wget
+#        - unzip
+#        - java-1.8.0-openjdk
+#        - java-1.8.0-openjdk-devel
+#        state: present
     
-    - name: Create a group as nexus
-      group:
-        name: nexus
+#     - name: Create a group as nexus
+#       group:
+#         name: nexus
 
-    - name: Create Nexus user
-      user:
-        name: nexus
-        group: nexus
-        home: /opt/nexus
-        system: yes
-        shell: /bin/nologin
-        createhome: no
+#     - name: Create Nexus user
+#       user:
+#         name: nexus
+#         group: nexus
+#         home: /opt/nexus
+#         system: yes
+#         shell: /bin/nologin
+#         createhome: no
 
-    - name: Create a directory 
-      file: 
-        path: /opt/nexusdata
-        state: directory
-        mode: '0755'
+#     - name: Create a directory 
+#       file: 
+#         path: /opt/nexusdata
+#         state: directory
+#         mode: '0755'
 
-    - name: Create a directory 
-      file: 
-        path: /opt/nexus
-        state: directory
-        mode: '0755'
+#     - name: Create a directory 
+#       file: 
+#         path: /opt/nexus
+#         state: directory
+#         mode: '0755'
   
-    - name: Download latest nexus artifact
-      get_url:
-        url: http://download.sonatype.com/nexus/3/latest-unix.tar.gz
-        dest: /tmp/nexus.tar.gz
+#     - name: Download latest nexus artifact
+#       get_url:
+#         url: http://download.sonatype.com/nexus/3/latest-unix.tar.gz
+#         dest: /tmp/nexus.tar.gz
 
-    - name: Extract it to /opt/nexus
-      unarchive:
-        src: /tmp/nexus.tar.gz
-        dest: /opt/nexus
-        remote_src: yes
+#     - name: Extract it to /opt/nexus
+#       unarchive:
+#         src: /tmp/nexus.tar.gz
+#         dest: /opt/nexus
+#         remote_src: yes
         
-    - name: Edit the nexus.rc
-      lineinfile: 
-        path: /opt/nexus/nexus-3.56.0-01/bin/nexus.rc
-        regexp: '^#RUN_AS_USER='
-        line: 'RUN_AS_USER="nexus"'
+#     - name: Edit the nexus.rc
+#       lineinfile: 
+#         path: /opt/nexus/nexus-3.56.0-01/bin/nexus.rc
+#         regexp: '^#RUN_AS_USER='
+#         line: 'RUN_AS_USER="nexus"'
       
-    - name: Edit the nexus properties file
-      lineinfile:
-        path: /opt/nexus/nexus-3.56.0-01/etc/nexus-default.properties
-        regexp: '^#nexus.web.host='
-        line: 'nexus.web.host={{ ansible_host }}'
+#     - name: Edit the nexus properties file
+#       lineinfile:
+#         path: /opt/nexus/nexus-3.56.0-01/etc/nexus-default.properties
+#         regexp: '^#nexus.web.host='
+#         line: 'nexus.web.host={{ ansible_host }}'
         
-    - name: Edit the nexus properties file
-      lineinfile:
-        path: /opt/nexus/nexus-3.56.0-01/etc/nexus-default.properties
-        regexp: '^#nexus.web.port=8081'
-        line: 'nexus.web.port=8081'
+#     - name: Edit the nexus properties file
+#       lineinfile:
+#         path: /opt/nexus/nexus-3.56.0-01/etc/nexus-default.properties
+#         regexp: '^#nexus.web.port=8081'
+#         line: 'nexus.web.port=8081'
 
-    - name: Give permission to /opt/nexus
-      shell:
-        chdir: /opt/nexus
-        cmd: chown -R nexus:nexus /opt/nexus
+#     - name: Give permission to /opt/nexus
+#       shell:
+#         chdir: /opt/nexus
+#         cmd: chown -R nexus:nexus /opt/nexus
 
-    - name: Give permission to /opt/nexusdata
-      shell:
-        chdir: /opt/nexusdata
-        cmd: chmod -R 0777 /opt/nexusdata
+#     - name: Give permission to /opt/nexusdata
+#       shell:
+#         chdir: /opt/nexusdata
+#         cmd: chmod -R 0777 /opt/nexusdata
     
-    - name: Give user permission /opt/nexusdata
-      shell:
-        chdir: /opt/nexus
-        cmd: chown -R nexus:nexus /opt/nexusdata
+#     - name: Give user permission /opt/nexusdata
+#       shell:
+#         chdir: /opt/nexus
+#         cmd: chown -R nexus:nexus /opt/nexusdata
 
-    - name: Give permission to /opt/nexus
-      shell:
-        chdir: /opt/nexus
-        cmd: chmod -R 0777 /opt/nexus
+#     - name: Give permission to /opt/nexus
+#       shell:
+#         chdir: /opt/nexus
+#         cmd: chmod -R 0777 /opt/nexus
 
-    - name: Copy file
-      copy: 
-        src: ./nexus.service
-        dest: /etc/systemd/system/nexus.service
+#     - name: Copy file
+#       copy: 
+#         src: ./nexus.service
+#         dest: /etc/systemd/system/nexus.service
 
-    - name: Disable firewalld
-      service:
-        name: firewalld
-        state: stopped
-        enabled: False   
+#     - name: Disable firewalld
+#       service:
+#         name: firewalld
+#         state: stopped
+#         enabled: False   
 
-    - name: Enable service
-      service:
-        name: nexus.service
-        enabled: yes
-        masked: no
-        daemon_reload: true
+#     - name: Enable service
+#       service:
+#         name: nexus.service
+#         enabled: yes
+#         masked: no
+#         daemon_reload: true
 
-    - name: Start service
-      service:
-        name: nexus.service
-        state: restarted
+#     - name: Start service
+#       service:
+#         name: nexus.service
+#         state: restarted
 
 
       
-    - name: Health check
-      uri: 
-          url: "{{ nexus_api_url }}/service/rest/v1/status" 
-          user: "{{ nexus_username }}"
-          password: "{{ nexus_password }}"
-          validate_certs: false
-          force_basic_auth: true
-      register: result
-      until: result.status == 200
-      retries: 10
-      delay: 20
+#     - name: Health check
+#       uri: 
+#           url: "{{ nexus_api_url }}/service/rest/v1/status" 
+#           user: "{{ nexus_username }}"
+#           password: "{{ nexus_password }}"
+#           validate_certs: false
+#           force_basic_auth: true
+#       register: result
+#       until: result.status == 200
+#       retries: 10
+#       delay: 20
 
  
-    - name: Create Nexus Role
-      uri:
-          url: "{{ nexus_api_url }}/service/rest/v1/security/roles"
-          method: POST
-          user: "{{ nexus_username }}"
-          password: "{{ nexus_password }}"
-          validate_certs: false
-          force_basic_auth: true
-          body_format: json
-          body:
-              id: "{{ role_id }}"
-              name: "{{ role_name }}"
-              decsription: "new_role"
-              privileges:
-                -  "nx-repository-view-*-*-*"
+#     - name: Create Nexus Role
+#       uri:
+#           url: "{{ nexus_api_url }}/service/rest/v1/security/roles"
+#           method: POST
+#           user: "{{ nexus_username }}"
+#           password: "{{ nexus_password }}"
+#           validate_certs: false
+#           force_basic_auth: true
+#           body_format: json
+#           body:
+#               id: "{{ role_id }}"
+#               name: "{{ role_name }}"
+#               decsription: "new_role"
+#               privileges:
+#                 -  "nx-repository-view-*-*-*"
               
              
-          headers:
-               Content-Type: "application/json"
-          return_content: yes
-          status_code: 200
+#           headers:
+#                Content-Type: "application/json"
+#           return_content: yes
+#           status_code: 200
        
-      register: roles
+#       register: roles
    
    
 
-    - name: Create Nexus local user
-      uri:
-          url: "{{ nexus_api_url }}/service/rest/v1/security/users"   
-          method: POST
-          user: "{{ nexus_username }}"
-          password: "{{ nexus_password }}"
-          validate_certs: false
-          force_basic_auth: true
-          body:
-              userId: "{{ user_id }}"
-              firstName: "{{ first_name }}"
-              lastName: "{{ last_name }}"
-              password: "{{ user_password }}"
-              emailAddress: "{{ emailAddress }}"
-              user_password: "{{ user_password }}"
-              roles: 
-                - "{{ role_id}}"
+#     - name: Create Nexus local user
+#       uri:
+#           url: "{{ nexus_api_url }}/service/rest/v1/security/users"   
+#           method: POST
+#           user: "{{ nexus_username }}"
+#           password: "{{ nexus_password }}"
+#           validate_certs: false
+#           force_basic_auth: true
+#           body:
+#               userId: "{{ user_id }}"
+#               firstName: "{{ first_name }}"
+#               lastName: "{{ last_name }}"
+#               password: "{{ user_password }}"
+#               emailAddress: "{{ emailAddress }}"
+#               user_password: "{{ user_password }}"
+#               roles: 
+#                 - "{{ role_id}}"
               
-              status: "{{ status }}"     
-          body_format: json
-          headers:
-             Content-Type: "application/json"
-          return_content: yes
-          status_code: 200
+#               status: "{{ status }}"     
+#           body_format: json
+#           headers:
+#              Content-Type: "application/json"
+#           return_content: yes
+#           status_code: 200
          
-      register: login
+#       register: login
 
 
-    - name: Create Nexus Repo
-      uri: 
-        url: "{{ nexus_api_url }}/service/rest/v1/repositories/docker/hosted"  
-        method: POST
-        user: "{{ nexus_username }}"
-        password: "{{ nexus_password }}"
-        validate_certs: false
-        force_basic_auth: true
-        body:
-            {
-            "name": "elif-docker",
-            "online": true,
-            "storage": {
-             "blobStoreName": "default",
-             "strictContentTypeValidation": true,
-             "writePolicy": "allow_once",
-             "latestPolicy": true
-            },
-            "component": {
-             "proprietaryComponents": true
-            },
-            "docker": {
-              "v1Enabled": false,
-              "forceBasicAuth": true,
-              "httpPort": 8082,
-              "httpsPort": 8083,
-              "subdomain": "docker-a"
-            } 
-          }
+#     - name: Create Nexus Repo
+#       uri: 
+#         url: "{{ nexus_api_url }}/service/rest/v1/repositories/docker/hosted"  
+#         method: POST
+#         user: "{{ nexus_username }}"
+#         password: "{{ nexus_password }}"
+#         validate_certs: false
+#         force_basic_auth: true
+#         body:
+#             {
+#             "name": "elif-docker",
+#             "online": true,
+#             "storage": {
+#              "blobStoreName": "default",
+#              "strictContentTypeValidation": true,
+#              "writePolicy": "allow_once",
+#              "latestPolicy": true
+#             },
+#             "component": {
+#              "proprietaryComponents": true
+#             },
+#             "docker": {
+#               "v1Enabled": false,
+#               "forceBasicAuth": true,
+#               "httpPort": 8082,
+#               "httpsPort": 8083,
+#               "subdomain": "docker-a"
+#             } 
+#           }
 
-        body_format: json
-        headers:
-             Content-Type: "application/json"
-        return_content: yes
-        status_code: 201
+#         body_format: json
+#         headers:
+#              Content-Type: "application/json"
+#         return_content: yes
+#         status_code: 201
        
          
-      register: login
+#       register: login
+
+# - hosts: trivy
+#   tasks:
+
+#     -  name: Add repository
+#        ansible.builtin.yum_repository:
+#          name: trivy
+#          description: Trivy YUM repo
+#          baseurl: https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+#          gpgcheck: no
+#          enabled: 1
+
+#     - name: Install trivy
+#       yum:
+#        name:
+#         - trivy
+#        state: present
+    
+         
 
 
 

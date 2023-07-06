@@ -122,3 +122,23 @@ variable "emailAddress" {
   description = "nexus emailAddress"
   default     = "test@test.com"
 }
+variable "sonarqube_api_url" {
+  description = "sonarqube api url"
+  default     = "http://172.16.1.103:9000"
+}
+variable "sonarqube_username" {
+  description = "sonarqube username"
+  default     = "admin"
+}
+variable "sonarqube_password" {
+  description = "sonarqube password"
+  default     = "admin"
+}
+variable "sonarqube_admin_newpassword" {
+  description = "sonarqube new password"
+  default     = "Renegade187!"
+}
+variable "token_name" {
+  description = "sonarqube new token"
+  default     = "new"
+}
