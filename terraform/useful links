@@ -1,0 +1,29 @@
+https://github.com/hashicorp/terraform-provider-vsphere/issues/949
+https://garyflynn.com/post/create-your-first-vsphere-terraform-configuration/       terraform configuration
+https://github.com/danielamor/terraform_centos7_vsphere/blob/master/README.md
+https://github.com/hashicorp/terraform-provider-vsphere/issues/1496  
+https://developer.hashicorp.com/terraform/language/meta-arguments/count#count-index     (increase the amount of VMs and naming them)
+https://medium.com/@rajeshshukla_49087/ansible-inventory-file-using-terraform-b305db3ead2  (inventory file sample)
+https://coffay.haus/pages/terraform+ansible/
+https://iamroot.it/2021/09/21/terraform-building-a-dynamic-ansible-inventory-using-templatefile/   (this one did not work)
+https://www.percona.com/blog/how-to-generate-an-ansible-inventory-with-terraform/
+https://plugins.jenkins.io/job-dsl/ job DSL plugin
+https://medium.com/tech-learn-share/jenkins-job-dsl-667e88afc2f3  job DSL plugin
+https://www.jenkins.io/projects/jcasc/  JCASC plugin
+https://plugins.jenkins.io/configuration-as-code/ JCASC plugin
+https://medium.com/globant/jenkins-jcasc-for-beginners-819dff6f8bc including JCASC sample
+https://plugins.jenkins.io/github/ GitHub plugin
+https://www.cloudbees.com/blog/using-git-jenkins Git install
+https://ostechnix.com/ansible-register/ ansible register variable
+https://dev.to/mesadhan/install-nexus-repository-manager-linux-in-centos7-deploy-and-use-jar-4bge   install nexus
+https://infohub.delltechnologies.com/l/dell-powermax-ansible-modules-best-practices-1/making-rest-api-calls-with-the-ansible-uri-module-1      user/role
+https://blogs.perficient.com/2022/05/31/using-ansible-uri-module-with-sonarqube-tokens/
+https://blog.soebes.io/posts/2023/01/2023-01-21-ansible-sonarqube-setup/
+rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm
+https://serverfault.com/questions/736538/install-rpm-package-using-ansible
+https://aquasecurity.github.io/trivy/v0.18.3/installation/ 
+https://github.com/aquasecurity/trivy-repo
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/yum_repository_module.html
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+https://<access token>@github.com/<userName>/<repository>.git
+https://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@github.com/EAS-Elif/full_pipeline.git/

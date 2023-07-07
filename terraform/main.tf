@@ -56,6 +56,12 @@ role_privileges=${var.role_privileges}
 first_name=${var.first_name}
 last_name=${var.last_name}
 emailAddress=${var.emailAddress}
+sonarqube_api_url=http://${vsphere_virtual_machine.vm[1].guest_ip_addresses[0]}:9000
+sonarqube_username=${var.sonarqube_username}
+sonarqube_password=${var.sonarqube_password}
+sonarqube_admin_newpassword=${var.sonarqube_admin_newpassword}
+sonar_token_name=${var.sonar_token_name}
+status=${var.status}
 EOF
 }
 
