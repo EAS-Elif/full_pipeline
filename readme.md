@@ -15,3 +15,10 @@
 ### Next Steps
    1. Deployment
    2. Monitoring
+
+### Usage
+   1. $git clone https://github.com/EAS-Elif/full_pipeline
+   2. $cd terraform
+   3. $terraform apply
+   4. $cd ansible
+   5. $ansible-playbook -i inventory.ini playbook.yml
