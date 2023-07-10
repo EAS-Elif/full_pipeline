@@ -1,4 +1,3 @@
-inventory.ini
 # Local .terraform directories
 **/.terraform/*
 
@@ -35,3 +34,4 @@ override.tf.json
 terraform.rc
 
 # Ignore inventory files
+inventory.ini

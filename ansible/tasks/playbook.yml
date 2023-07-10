@@ -6,19 +6,19 @@
   
     - name: Download Repo file
       ansible.builtin.get_url: 
-        url: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+        url: https://pkg.jenkins.io/redhat/jenkins.repo
         dest: /etc/yum.repos.d/jenkins.repo
     
-    - name: Download key
+    - name: Download and install key
       ansible.builtin.rpm_key: 
-        key: https://pkg.jenkins.io/redhat/jenkins.io.key
-      
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key 
+
     - name: Install java
       dnf:
        name:
-       - java-1.8.0-openjdk-devel
-
-    - name: Install jenkins
+       - java-17-openjdk
+    
+    - name: Install jenkins and git
       dnf:
        name:
        - jenkins
@@ -70,10 +70,14 @@
         name:
         - trivy
         state: present
+    - name: Create casc_configs directory
+      file:
+        path: /var/jenkins_home/casc_configs
+        state: directory
 
     -  name: Copy JCASC config to remote 
        ansible.builtin.template:
-         src: /Users/eliferdem/projects/jenkins.yaml
+         src: ./jenkins.yaml
          dest: /var/jenkins_home/casc_configs/jenkins.yaml
          owner: root
          group: root
@@ -444,10 +448,3 @@
        name:
         - trivy
        state: present
-    
-         
-
-
-
-    
-    
