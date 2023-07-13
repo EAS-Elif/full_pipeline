@@ -47,6 +47,7 @@ ${vsphere_virtual_machine.vm[3].name} ansible_host=${vsphere_virtual_machine.vm[
 ansible_ssh_password=${var.ansible_ssh_password}
 ansible_ssh_user=${var.ansible_ssh_user}
 nexus_api_url=http://${vsphere_virtual_machine.vm[3].guest_ip_addresses[0]}:8081
+x=http://${vsphere_virtual_machine.vm[3].guest_ip_addresses[0]}
 nexus_username=${var.nexus_username} 
 nexus_password=${var.nexus_password}
 user_id=${var.user_id}

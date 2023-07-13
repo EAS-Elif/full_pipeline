@@ -91,6 +91,7 @@
         name:
         - trivy
         state: present
+
     - name: Create casc_configs directory
       file:
         path: /var/jenkins_home/casc_configs
@@ -102,7 +103,24 @@
          dest: /var/jenkins_home/casc_configs/jenkins.yaml
          owner: root
          group: root
-         mode: '0644'    
+         mode: '0644'   
+
+    - name: Create a file for daemon.json
+      ansible.builtin.lineinfile: 
+        path: /etc/docker/daemon.json
+        line: { "insecure-registries":["{{ x }}:8082"] }
+        create: yes
+
+    # - name: Stop docker service on jenkins 
+    #   ansible.builtin.systemd:
+    #     name: docker
+    #     state: stopped
+
+    - name: Restart service
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: true
+        name: docker
 
 - hosts: sonarqubelif
   tasks:
@@ -252,20 +270,20 @@
       debug:
         var: get_sonar_output
 
-# - hosts: jenkinselif
-#   tasks:
-#     - name: Configuration for Sonarqube
-#       file:
-#         path: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/
-#         state: directory
+- hosts: jenkinselif
+  tasks:
+    - name: Configuration for Sonarqube
+      file:
+        path: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/
+        state: directory
 
-#     - name: Copy conf to remote destination
-#       ansible.builtin.template:
-#         src: ./sonar-scanner.properties
-#         dest: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/sonar-scanner.properties
-#         owner: root
-#         group: root
-#         mode: '0644'     
+    - name: Copy conf to remote destination
+      ansible.builtin.template:
+        src: ./sonar-scanner.properties
+        dest: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/sonar-scanner.properties
+        owner: root
+        group: root
+        mode: '0644'     
  
 - hosts: nexuselif
   tasks:

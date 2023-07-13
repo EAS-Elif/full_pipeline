@@ -1,3 +1,21 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - string:
+          id: "github"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAwOofdAEnp0t6bYxZfVqO9kbwJH7EFkSkK51nVSlpak6WIGaLdcmfbxuZ2i9qfN5S5qoH2T0E+1V1hoSM60wQDUg==}"
+      - string:
+          id: "sonarqube"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAwAdn5pFQ/d4s6B+xj1vYOm8+Io0hc6AtVddmY+2masNF8FV9BxJ03i/DdIonD7nMzWnTjmR9TKvqe88tGg5jaWw==}"
+      - usernamePassword:
+          id: "nexus"
+          password: "{AQAAABAAAAAQsmJim7sFlpL4WIDwdamAsHcZUzSRd8i5U/AXhuhJrYg=}"
+          scope: GLOBAL
+          username: "admin"
+          usernameSecret: true
 jenkins:
   agentProtocols:
   - "JNLP4-connect"
@@ -9,6 +27,15 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
+  disabledAdministrativeMonitors:
+  - "hudson.util.DoubleLaunchChecker"
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "NEXUSIP"
+        value: "http://172.16.2.94:8082"
+      - key: "NEXUSTAG"
+        value: "172.16.2.94:8082/elif-docker"
   labelAtoms:
   - name: "built-in"
   markupFormatter: "plainText"
@@ -28,16 +55,16 @@ jenkins:
       allowsSignup: false
       enableCaptcha: false
       users:
-      - id: "admin"
-        name: "admin"
+      - id: "elif"
+        name: "elif erdem"
         properties:
-        - "apiToken"
         - "myView"
-        - "timezone"
-        - "experimentalFlags"
-        - "mailer"
         - preferredProvider:
             providerId: "default"
+        - "timezone"
+        - "experimentalFlags"
+        - "apiToken"
+        - "mailer"
   slaveAgentPort: -1
   updateCenter:
     sites:
@@ -78,6 +105,7 @@ unclassified:
       $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
 
       Check console output at $BUILD_URL to view the results.
+    defaultContentType: "text/plain"
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     defaultTriggerIds:
     - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
@@ -96,7 +124,7 @@ unclassified:
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
-    hookUrl: "http://172.16.1.246:8080/github-webhook/"
+    hookUrl: "http://172.16.2.93:8080/github-webhook/"
   globalTimeOutConfiguration:
     operations:
     - "abortOperation"
@@ -112,7 +140,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
-    url: "http://172.16.1.246:8080/"
+    url: "http://172.16.2.93:8080/"
   mailer:
     charset: "UTF-8"
     useSsl: false
@@ -128,7 +156,14 @@ unclassified:
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
   sonarGlobalConfiguration:
-    buildWrapperEnabled: false
+    buildWrapperEnabled: true
+    installations:
+    - credentialsId: "sonarqube"
+      name: "SonarQubeScanner"
+      serverUrl: "http://172.16.2.95:9000"
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
   timestamper:
     allPipelines: false
     elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
@@ -141,3 +176,11 @@ tool:
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
+  sonarRunnerInstallation:
+    installations:
+    - name: "SonarQubeScanner"
+      properties:
+      - installSource:
+          installers:
+          - sonarRunnerInstaller:
+              id: "4.8.0.2856"

@@ -31,7 +31,6 @@ https://community.sonarsource.com/t/you-must-define-the-following-mandatory-prop
 https://blogs.perficient.com/2022/05/31/using-ansible-uri-module-with-sonarqube-tokens/
 https://galaxy.ansible.com/geerlingguy/docker
 https://stackoverflow.com/questions/49674004/docker-repository-server-gave-http-response-to-https-client
-
 https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner/
 
 For GitHub and Sonarqube created credentials tokens
@@ -55,6 +54,17 @@ sonar.login=ca35bc6664d9c1679735fd36dc87d2396f187138
 
 do nexus credentials part to login into nexus
 
+/etc/docker/daemon.json
 add ip to daemon.json    { "insecure-registries":["http://172.16.2.64:8082"] }
 systemctl stop docker
 systemctl start docker
+
+login firstly into nexus and login with the new password before run the pipeline
+
+MANAGE JENKINS - SYSTEM 
+GLOBAL PROPERTIES
+CHECK ENV VARIABLES
+NEXUSIP
+http://172.16.2.94:8082
+NEXUSTAG
+172.16.2.94:8082/elif-docker
