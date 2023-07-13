@@ -49,22 +49,22 @@ variable "ansible_ssh_user" {
 
 variable "vm_1" {
   description = "vm1 name"
-  default     = "jenkins"
+  default     = "jenkinselif"
 }
 
 variable "vm_2" {
   description = "vm2 name"
-  default     = "sonarqube"
+  default     = "sonarqubelif"
 }
 
 variable "vm_3" {
   description = "vm3 name"
-  default     = "trivy"
+  default     = "trivyelif"
 }
 
 variable "vm_4" {
   description = "vm4 name"
-  default     = "nexus"
+  default     = "nexuselif"
 }
 
 variable "vm_cpu" {
@@ -142,3 +142,18 @@ variable "status" {
   description = "success status"
   default     = "active"
 }
+variable "project_name" {
+  description = "sonar project name"
+  default     = "new"
+}
+
+variable "project_key" {
+  description = "sonar project key"
+  default     = "new"
+}
+variable "vsphere_host" {
+  description = "host"
+  default     = "esxi4.dev.easlab.co.uk"
+}
+
+

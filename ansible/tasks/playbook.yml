@@ -1,7 +1,15 @@
 ---
-- hosts: jenkins
+- hosts: jenkinselif
   become_user: root
   become: true
+  vars:
+    docker_add_repo: true
+    docker_yum_repo_url: https://download.docker.com/linux/centos/docker-ce.repo
+    docker_yum_gpg_key: https://download.docker.com/linux/centos/gpg
+
+  roles:
+    
+   - { role: geerlingguy.docker }
   tasks:
   
     - name: Download Repo file
@@ -12,17 +20,30 @@
     - name: Download and install key
       ansible.builtin.rpm_key: 
         key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key 
+      
+    - name: Add Jenkins user to Docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
 
-    - name: Install java
-      dnf:
-       name:
-       - java-17-openjdk
+    - name: Change permissions of /var/run/docker.sock
+      file:
+        path: /var/run/docker.sock
+        mode: "0777"
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
     
     - name: Install jenkins and git
-      dnf:
+      yum:
        name:
        - jenkins
        - git
+       - java-17-openjdk
        state: present
 
     - name: Disable firewalld
@@ -83,7 +104,7 @@
          group: root
          mode: '0644'    
 
-- hosts: sonarqube
+- hosts: sonarqubelif
   tasks:
     - name: Install tools
       yum: 
@@ -211,7 +232,7 @@
         validate_certs: false
         force_basic_auth: true
         return_content: yes
-        status_code: 204 
+        status_code: 204
       register: response
 
     - name: Generate access token 
@@ -226,7 +247,27 @@
              Authorization: "Bearer MY_TOKEN"
       register: get_sonar_output
 
-- hosts: nexus
+
+    - name: Sonar debug
+      debug:
+        var: get_sonar_output
+
+# - hosts: jenkinselif
+#   tasks:
+#     - name: Configuration for Sonarqube
+#       file:
+#         path: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/
+#         state: directory
+
+#     - name: Copy conf to remote destination
+#       ansible.builtin.template:
+#         src: ./sonar-scanner.properties
+#         dest: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/sonar-scanner.properties
+#         owner: root
+#         group: root
+#         mode: '0644'     
+ 
+- hosts: nexuselif
   tasks:
     - name: Install tools into nexus
       yum: 
@@ -433,7 +474,7 @@
         status_code: 201
       register: login
 
-- hosts: trivy
+- hosts: trivyelif
   tasks:
     -  name: Add repository
        ansible.builtin.yum_repository:

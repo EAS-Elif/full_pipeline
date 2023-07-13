@@ -27,3 +27,34 @@ https://docs.ansible.com/ansible/latest/collections/ansible/builtin/yum_reposito
 https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
 https://<access token>@github.com/<userName>/<repository>.git
 https://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@github.com/EAS-Elif/full_pipeline.git/
+https://community.sonarsource.com/t/you-must-define-the-following-mandatory-properties-for-unknown-sonar-projectkey/41793/2
+https://blogs.perficient.com/2022/05/31/using-ansible-uri-module-with-sonarqube-tokens/
+https://galaxy.ansible.com/geerlingguy/docker
+https://stackoverflow.com/questions/49674004/docker-repository-server-gave-http-response-to-https-client
+
+https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner/
+
+For GitHub and Sonarqube created credentials tokens
+
+go to system settings- sonarqube part = check environment variables part
+
+name: SonarQubeScanner
+server url: http://172.16.2.12:9000 (dont forget to change ip address)
+Server authentication token: access token named sonar
+
+go to tools and add sonarqube scanner
+name: SonarQubeScanner
+install automatically check
+
+
+/var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/sonar-scanner.properties
+sonar.projectKey=sonarqube
+sonar.sources=.
+sonar.host.url=http://172.16.2.62:9000
+sonar.login=ca35bc6664d9c1679735fd36dc87d2396f187138
+
+do nexus credentials part to login into nexus
+
+add ip to daemon.json    { "insecure-registries":["http://172.16.2.64:8082"] }
+systemctl stop docker
+systemctl start docker

@@ -9,6 +9,7 @@ resource "vsphere_virtual_machine" "vm" {
   guest_id         = data.vsphere_virtual_machine.template.guest_id
   scsi_type        = data.vsphere_virtual_machine.template.scsi_type
   firmware         = "efi"
+  host_system_id   = data.vsphere_host.host.id
 
   # Set network parameters
   network_interface {
@@ -62,6 +63,8 @@ sonarqube_password=${var.sonarqube_password}
 sonarqube_admin_newpassword=${var.sonarqube_admin_newpassword}
 sonar_token_name=${var.sonar_token_name}
 status=${var.status}
+project_name=${var.project_name}
+project_key=${var.project_key}
 EOF
 }
 
