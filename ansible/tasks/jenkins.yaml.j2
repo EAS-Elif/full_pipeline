@@ -1,3 +1,17 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - string:
+          id: "sonarqube"
+          scope: GLOBAL
+          secret:  {{ hostvars['sonarqubelif']['sonar_token'] }}
+      - usernamePassword:
+          id: "nexus"
+          password: {{ hostvars['nexuselif']['nexus_password'] }}
+          scope: GLOBAL
+          username: "admin"
+          usernameSecret: true
 jenkins:
   agentProtocols:
   - "JNLP4-connect"
@@ -9,6 +23,15 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
+  disabledAdministrativeMonitors:
+  - "hudson.util.DoubleLaunchChecker":
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "NEXUSIP"
+        value: "{{ x }}:8082"
+      - key: "NEXUSTAG"
+        value: "{{ y }}/elif-docker"
   labelAtoms:
   - name: "built-in"
   markupFormatter: "plainText"
@@ -78,6 +101,7 @@ unclassified:
       $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
 
       Check console output at $BUILD_URL to view the results.
+    defaultContentType: "text/plain"
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     defaultTriggerIds:
     - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
@@ -96,7 +120,7 @@ unclassified:
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
-    hookUrl: "http://172.16.1.135:8080/github-webhook/"
+    hookUrl: "{{ z }}/github-webhook/"
   globalTimeOutConfiguration:
     operations:
     - "abortOperation"
@@ -112,7 +136,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
-    url: "http://172.16.1.135:8080/"
+    url: "{{ z }}/"
   mailer:
     charset: "UTF-8"
     useSsl: false
@@ -128,7 +152,14 @@ unclassified:
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
   sonarGlobalConfiguration:
-    buildWrapperEnabled: false
+    buildWrapperEnabled: true
+    installations:
+    - credentialsId: "sonarqube"
+      name: "SonarQubeScanner"
+      serverUrl: "{{ sonarqube_api_url }}"
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
   timestamper:
     allPipelines: false
     elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
@@ -141,3 +172,11 @@ tool:
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
+  sonarRunnerInstallation:
+    installations:
+    - name: "SonarQubeScanner"
+      properties:
+      - installSource:
+          installers:
+          - sonarRunnerInstaller:
+              id: "4.8.0.2856"

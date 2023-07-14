@@ -1,127 +1,4 @@
 ---
-- hosts: jenkinselif
-  become_user: root
-  become: true
-  vars:
-    docker_add_repo: true
-    docker_yum_repo_url: https://download.docker.com/linux/centos/docker-ce.repo
-    docker_yum_gpg_key: https://download.docker.com/linux/centos/gpg
-
-  roles:
-    
-   - { role: geerlingguy.docker }
-  tasks:
-  
-    - name: Download Repo file
-      ansible.builtin.get_url: 
-        url: https://pkg.jenkins.io/redhat/jenkins.repo
-        dest: /etc/yum.repos.d/jenkins.repo
-    
-    - name: Download and install key
-      ansible.builtin.rpm_key: 
-        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key 
-      
-    - name: Add Jenkins user to Docker group
-      user:
-        name: jenkins
-        groups: docker
-        append: yes
-
-    - name: Change permissions of /var/run/docker.sock
-      file:
-        path: /var/run/docker.sock
-        mode: "0777"
-
-    - name: Start Docker service
-      service:
-        name: docker
-        state: restarted
-        enabled: yes
-    
-    - name: Install jenkins and git
-      yum:
-       name:
-       - jenkins
-       - git
-       - java-17-openjdk
-       state: present
-
-    - name: Disable firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: stopped
-        enabled: False
-
-    - name: Start service
-      ansible.builtin.service:
-       name: jenkins 
-       state: started
-
-    - name: Make sure jenkins service unit is running
-      ansible.builtin.systemd:
-       state: started
-       name: jenkins
-
-    - name: Using shell module to get the password
-      ansible.builtin.shell: cat /var/lib/jenkins/secrets/initialAdminPassword
-      register: jenkins_password
-
-    - name: Install configuration-as-code plugin 
-      jenkins_plugin:
-        name: "{{ item }}"
-        url_username: admin
-        url_password: "{{jenkins_password.stdout}}"
-        url: http://localhost:8080
-      loop:
-      - configuration-as-code
-      - job-dsl-plugin
-      - github-plugin
-      - sonar
-
-    -  name: Add Trivy repository
-       ansible.builtin.yum_repository:
-         name: trivy
-         description: Trivy YUM repo
-         baseurl: https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
-         gpgcheck: no
-         enabled: 1
-
-    -  name: Install trivy
-       yum:
-        name:
-        - trivy
-        state: present
-
-    - name: Create casc_configs directory
-      file:
-        path: /var/jenkins_home/casc_configs
-        state: directory
-
-    -  name: Copy JCASC config to remote 
-       ansible.builtin.template:
-         src: ./jenkins.yaml
-         dest: /var/jenkins_home/casc_configs/jenkins.yaml
-         owner: root
-         group: root
-         mode: '0644'   
-
-    - name: Create a file for daemon.json
-      ansible.builtin.lineinfile: 
-        path: /etc/docker/daemon.json
-        line: { "insecure-registries":["{{ x }}:8082"] }
-        create: yes
-
-    # - name: Stop docker service on jenkins 
-    #   ansible.builtin.systemd:
-    #     name: docker
-    #     state: stopped
-
-    - name: Restart service
-      ansible.builtin.systemd:
-        state: restarted
-        daemon_reload: true
-        name: docker
-
 - hosts: sonarqubelif
   tasks:
     - name: Install tools
@@ -268,23 +145,13 @@
 
     - name: Sonar debug
       debug:
-        var: get_sonar_output
+        var: get_sonar_output.json.token
 
-- hosts: jenkinselif
-  tasks:
-    - name: Configuration for Sonarqube
-      file:
-        path: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/
-        state: directory
+    - name: Set fact
+      set_fact: 
+        sonar_token: "{{ get_sonar_output.json.token}}"
 
-    - name: Copy conf to remote destination
-      ansible.builtin.template:
-        src: ./sonar-scanner.properties
-        dest: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQubeScanner/conf/sonar-scanner.properties
-        owner: root
-        group: root
-        mode: '0644'     
- 
+
 - hosts: nexuselif
   tasks:
     - name: Install tools into nexus
@@ -407,6 +274,10 @@
     - name: Using shell module to get the password
       ansible.builtin.shell: cat /opt/nexus/sonatype-work/nexus3/admin.password 
       register: nexus_password
+
+    - name: Nexus debug
+      debug:
+        var: nexus_password.stdout
  
     - name: Create Nexus Role
       uri:
@@ -492,6 +363,10 @@
         status_code: 201
       register: login
 
+    - name: Set fact
+      set_fact: 
+        nexus_password: "{{nexus_password.stdout}}"
+
 - hosts: trivyelif
   tasks:
     -  name: Add repository
@@ -507,3 +382,132 @@
        name:
         - trivy
        state: present
+
+- hosts: jenkinselif
+  become_user: root
+  become: true
+  vars:
+    docker_add_repo: true
+    docker_yum_repo_url: https://download.docker.com/linux/centos/docker-ce.repo
+    docker_yum_gpg_key: https://download.docker.com/linux/centos/gpg
+
+  roles:
+    
+   - { role: geerlingguy.docker }
+  tasks:
+  
+    - name: Download Repo file
+      ansible.builtin.get_url: 
+        url: https://pkg.jenkins.io/redhat/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+    
+    - name: Download and install key
+      ansible.builtin.rpm_key: 
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key 
+      
+    - name: Add Jenkins user to Docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
+
+    - name: Change permissions of /var/run/docker.sock
+      file:
+        path: /var/run/docker.sock
+        mode: "0777"
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
+    
+    - name: Install jenkins and git
+      yum:
+       name:
+       - jenkins
+       - git
+       - java-17-openjdk
+       state: present
+
+    - name: Disable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: False
+
+    - name: Start service
+      ansible.builtin.service:
+       name: jenkins 
+       state: started
+
+    - name: Make sure jenkins service unit is running
+      ansible.builtin.systemd:
+       state: started
+       name: jenkins
+
+    - name: Using shell module to get the password
+      ansible.builtin.shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password
+
+    - name: Install configuration-as-code plugin 
+      jenkins_plugin:
+        name: "{{ item }}"
+        url_username: admin
+        url_password: "{{jenkins_password.stdout}}"
+        url: http://localhost:8080
+      loop:
+      - configuration-as-code
+      - job-dsl-plugin
+      - github-plugin
+      - sonar
+
+    - name: Add Trivy repository
+      ansible.builtin.yum_repository:
+         name: trivy
+         description: Trivy YUM repo
+         baseurl: https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+         gpgcheck: no
+         enabled: 1
+
+    - name: Install trivy
+      yum:
+        name:
+        - trivy
+        state: present
+
+    - name: Create casc_configs directory
+      file:
+        path: /var/jenkins_home/casc_configs
+        state: directory
+
+    - name: Copy JCASC config to remote 
+      ansible.builtin.template:
+         src: ./jenkins.yaml.j2
+         dest: /var/jenkins_home/casc_configs/jenkins.yaml
+         owner: root
+         group: root
+         mode: '0644'   
+
+    - name: Create a file for daemon.json
+      ansible.builtin.lineinfile: 
+        path: /etc/docker/daemon.json
+        line: ' { "insecure-registries": ["{{ x }}:8082"] } '
+        create: yes
+
+    - name: Stop docker service on jenkins 
+      ansible.builtin.systemd:
+        name: docker
+        state: stopped
+
+    - name: Enable docker service
+      ansible.builtin.systemd:
+        name: docker
+        enabled: yes
+        masked: no
+        daemon_reload: true
+
+    -  name: Make sure docker service unit is running
+       ansible.builtin.systemd:
+         state: started
+         name: docker
