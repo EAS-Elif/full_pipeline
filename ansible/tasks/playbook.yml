@@ -1,5 +1,5 @@
 ---
-- hosts: sonarqubelif
+- hosts: sonarquberdem
   tasks:
     - name: Install tools
       yum: 
@@ -152,7 +152,7 @@
         sonar_token: "{{ get_sonar_output.json.token}}"
 
 
-- hosts: nexuselif
+- hosts: nexuserdem
   tasks:
     - name: Install tools into nexus
       yum: 
@@ -367,7 +367,7 @@
       set_fact: 
         nexus_password: "{{nexus_password.stdout}}"
 
-- hosts: trivyelif
+- hosts: trivyerdem
   tasks:
     -  name: Add repository
        ansible.builtin.yum_repository:
@@ -383,7 +383,7 @@
         - trivy
        state: present
 
-- hosts: jenkinselif
+- hosts: jenkinserdem
   become_user: root
   become: true
   vars:

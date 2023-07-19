@@ -5,13 +5,12 @@ credentials:
       - string:
           id: "sonarqube"
           scope: GLOBAL
-          secret:  {{ hostvars['sonarqubelif']['sonar_token'] }}
+          secret:  {{ hostvars['sonarquberdem']['sonar_token'] }}
       - usernamePassword:
           id: "nexus"
-          password: {{ hostvars['nexuselif']['nexus_password'] }}
+          password: {{ hostvars['nexuserdem']['nexus_password'] }}
           scope: GLOBAL
           username: "admin"
-          usernameSecret: true
 jenkins:
   agentProtocols:
   - "JNLP4-connect"
@@ -23,8 +22,6 @@ jenkins:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
-  disabledAdministrativeMonitors:
-  - "hudson.util.DoubleLaunchChecker":
   globalNodeProperties:
   - envVars:
       env:
@@ -92,6 +89,8 @@ unclassified:
     - "jobBuildDiscarder"
   buildStepOperation:
     enabled: false
+  casCGlobalConfig:
+    configurationPath: "/var/jenkins_home/casc_configs/jenkins.yaml"
   email-ext:
     adminRequiredForTemplateTesting: false
     allowUnregisteredEnabled: false
@@ -101,7 +100,7 @@ unclassified:
       $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
 
       Check console output at $BUILD_URL to view the results.
-    defaultContentType: "text/plain"
+
     defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
     defaultTriggerIds:
     - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
@@ -152,14 +151,11 @@ unclassified:
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
   sonarGlobalConfiguration:
-    buildWrapperEnabled: true
+    buildWrapperEnabled: false
     installations:
     - credentialsId: "sonarqube"
       name: "SonarQubeScanner"
       serverUrl: "{{ sonarqube_api_url }}"
-      triggers:
-        skipScmCause: false
-        skipUpstreamCause: false
   timestamper:
     allPipelines: false
     elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"

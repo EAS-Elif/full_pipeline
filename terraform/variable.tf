@@ -49,22 +49,22 @@ variable "ansible_ssh_user" {
 
 variable "vm_1" {
   description = "vm1 name"
-  default     = "jenkinselif"
+  default     = "jenkinserdem"
 }
 
 variable "vm_2" {
   description = "vm2 name"
-  default     = "sonarqubelif"
+  default     = "sonarquberdem"
 }
 
 variable "vm_3" {
   description = "vm3 name"
-  default     = "trivyelif"
+  default     = "trivyerdem"
 }
 
 variable "vm_4" {
   description = "vm4 name"
-  default     = "nexuselif"
+  default     = "nexuserdem"
 }
 
 variable "vm_cpu" {
