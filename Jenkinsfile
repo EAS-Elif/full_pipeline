@@ -2,11 +2,11 @@ pipeline{
     
     agent any 
         stages {
-            stage('Clone repository') {
-                steps {
-                    git branch: 'main', url: 'https://github.com/EAS-Elif/api-backend.git'
-                }
-            }
+            // stage('Clone repository') {
+            //     steps {
+            //         git branch: 'main', url: 'https://github.com/EAS-Elif/api-backend.git'
+            //     }
+            // }
             
             stage("Sonarqube analysis") {
                 environment {
